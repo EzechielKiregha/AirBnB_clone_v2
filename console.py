@@ -174,7 +174,7 @@ class HBNBCommand(cmd.Cmd):
             # for k, v in kwargs.items():
             #     print(k, " : ", v)
             new_instance = eval(class_name)(**kwargs)
-            print("Before saving:", new_instance.__dict__)
+            # print("Before saving:", new_instance.__dict__)
             # Save the new instance
             new_instance.save()
             # Debug print after saving
