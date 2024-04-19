@@ -129,24 +129,24 @@ class HBNBCommand(cmd.Cmd):
     #     except NameError:
     #         print("** class doesn't exist **")
 
-    def do_show(self, arg):
-        """Prints the string representation of an instance"""
-        args = arg.split()
-        if len(args) == 0:
-            print("** class name missing **")
-            return
-        try:
-            cls_name = args[0]
-            obj_id = args[1]
-            obj_key = "{}.{}".format(cls_name, obj_id)
-            print(storage.all()[obj_key])
-        except IndexError:
-            if cls_name not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-            else:
-                print("** instance id missing **")
-        except KeyError:
-            print("** no instance found **")
+    # def do_show(self, arg):
+    #     """Prints the string representation of an instance"""
+    #     args = arg.split()
+    #     if len(args) == 0:
+    #         print("** class name missing **")
+    #         return
+    #     try:
+    #         cls_name = args[0]
+    #         obj_id = args[1]
+    #         obj_key = "{}.{}".format(cls_name, obj_id)
+    #         print(storage.all()[obj_key])
+    #     except IndexError:
+    #         if cls_name not in HBNBCommand.classes:
+    #             print("** class doesn't exist **")
+    #         else:
+    #             print("** instance id missing **")
+    #     except KeyError:
+    #         print("** no instance found **")
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id"""
@@ -355,6 +355,8 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
 
+        if c_id.startswith('"') and c_id.endswith('"'):
+            c_id = c_id[1:-1]
         key = c_name + "." + c_id
 
         try:
@@ -374,6 +376,7 @@ class HBNBCommand(cmd.Cmd):
 
         if args:
             args = args.split(' ')[0]  # remove possible trailing args
+            print("Classe Name: ", args)
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
