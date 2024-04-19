@@ -303,6 +303,7 @@ class HBNBCommand(cmd.Cmd):
         new = args.partition(" ")
         c_name = new[0]
         c_id = new[2]
+        # print("Class Name :"+c_name+"\nClass ID: "+c_id)
 
         # guard against trailing args
         if c_id and ' ' in c_id:
@@ -320,7 +321,10 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
             return
 
+        if c_id.startswith('"') and c_id.endswith('"'):
+            c_id = c_id[1:-1]
         key = c_name + "." + c_id
+        # print("Instance :", key)
         try:
             print(storage._FileStorage__objects[key])
         except KeyError:
