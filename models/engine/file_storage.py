@@ -15,9 +15,10 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
+        F = FileStorage.__objects
         if cls is None:
-            return FileStorage.__objects
-        return {k: v for k, v in FileStorage.__objects.items() if isinstance(v, cls)}
+            return F
+        return {k: v for k, v in F.items() if isinstance(v, cls)}
 
     # def all(self):
     #     """Returns a dictionary of models currently in storage"""
@@ -67,37 +68,10 @@ class FileStorage:
                     classes[obj["__class__"]](**obj)
                     # eval(obj["__class__"])(**obj)
                     for key, obj in deserialized.items()}
-            
-            # for k , v in FileStorage.__objects.items():
-            #     print(k, " : ", v)
-            
+
         except (FileNotFoundError, json.JSONDecodeError):
             # No need for error
             pass
-
-    # def reload(self):
-    #     """Loads storage dictionary from file"""
-    #     from models.base_model import BaseModel
-    #     from models.user import User
-    #     from models.place import Place
-    #     from models.state import State
-    #     from models.city import City
-    #     from models.amenity import Amenity
-    #     from models.review import Review
-
-    #     classes = {
-    #                 'BaseModel': BaseModel, 'User': User, 'Place': Place,
-    #                 'State': State, 'City': City, 'Amenity': Amenity,
-    #                 'Review': Review
-    #               }
-    #     try:
-    #         temp = {}
-    #         with open(FileStorage.__file_path, 'r') as f:
-    #             temp = json.load(f)
-    #             for key, val in temp.items():
-    #                     self.all()[key] = classes[val['__class__']](**val)
-    #     except FileNotFoundError:
-    #         pass
 
     def find_by_id(self, model, obj_id):
         """Find and return an elemt of model by its id"""

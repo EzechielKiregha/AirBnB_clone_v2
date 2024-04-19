@@ -1,23 +1,29 @@
 #!/usr/bin/python3
 
 """
-Defines the BaseModel class which is the BaseClass
-that serves for parents to other classes
+Defines the BaseModel class 
+which serves as the base class for all other classes
 """
 
-from json import dumps
-from uuid import uuid4
-from datetime import datetime
 import models
+from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, DateTime
+import uuid
 
+Base = declarative_base()
 
 class BaseModel:
-    """Base class for all our classes"""
+    """The BaseModel class from which future classes will be derived"""
+
+    id = Column(String(60), nullable=False, primary_key=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
-        """Deserialize and serialize a class"""
+        """Initialization of the BaseModel class"""
         if kwargs:
-            self.id = kwargs.get('id', str(uuid4()))  # Generate a unique ID
+            self.id = kwargs.get('id', str(uuid.uuid4()))  # Generate a unique ID
             self.created_at = datetime.now()  # Set the creation date/time
             self.updated_at = datetime.now()  # Set the last update date/time
             for key, value in kwargs.items():
@@ -25,48 +31,31 @@ class BaseModel:
                     setattr(self, key, value)  # adds attributes from kwargs
             models.storage.new(self)
         else:
-            self.id = str(uuid4())
-            self.created_at = datetime.utcnow()
-            self.updated_at = datetime.utcnow()
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.now()
             models.storage.new(self)
 
-    #     if not kwargs:
-    #         self.id = str(uuid4())
-    #         self.created_at = datetime.utcnow()
-    #         self.updated_at = datetime.utcnow()
-    #         models.storage.new(self)
-    #     else:
-    #         self.id = kwargs.get('id', str(uuid4()))
-    #         self.created_at = self.parse_datetime(kwargs['created_at'])
-    #         self.updated_at = self.parse_datetime(kwargs['updated_at'])
-
-    # def parse_datetime(self, datetime_str):
-    #     return datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%S.%f')
-
-    def __str__(self):
-        """Override str representation of self"""
-        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
-
     def save(self):
-        """Updates last updated variable"""
-        self.updated_at = datetime.utcnow()
+        """Updates the updated_at attribute with the current datetime"""
+        self.updated_at = datetime.now()
         models.storage.save()
 
+    def delete(self):
+        """Delete the current instance from the storage"""
+        models.storage.delete(self)
+
     def to_dict(self):
-        """Returns a dictionary representation of self"""
-        return {
-        **{key: v for key,
-           v in self.__dict__.items() if not key.startswith("__")},
-        '__class__': type(self).__name__,
-        "created_at": (
-            self.created_at.isoformat()
-            if isinstance(self.created_at, datetime) else self.created_at
-        ),
-        "updated_at": (
-            self.updated_at.isoformat()
-            if isinstance(self.updated_at, datetime) else self.updated_at
-        ),
-    }
+        """Returns a dictionary containing all keys/values of the instance"""
+        new_dict = dict(self.__dict__)
+        new_dict['__class__'] = self.__class__.__name__
+        new_dict['created_at'] = self.created_at.isoformat()
+        new_dict['updated_at'] = self.updated_at.isoformat()
+        new_dict.pop('_sa_instance_state', None)
+        return new_dict
+
+    def __str__(self):
+        """Returns a string representation of the instance"""
+        return f"[{self.__class__.__name__}] ({self.id}) {self.to_dict()}"
 
     @classmethod
     def all(cls):
