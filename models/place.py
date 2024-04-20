@@ -5,6 +5,7 @@ from sqlalchemy import Column, Float, ForeignKey, Integer, String
 import models
 from models.base_model import Base, BaseModel
 from models.review import Review
+from sqlalchemy.orm import relationship
 
 
 class Place(BaseModel, Base):
@@ -21,6 +22,8 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    reviews = relationship("Review",
+                           backref="place", cascade="all, delete-orphan")
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
         @property
