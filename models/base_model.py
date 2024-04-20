@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 
 """
-Defines the BaseModel class 
+Defines the BaseModel class
 which serves as the base class for all other classes
 """
 
 import models
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, ForeignKey, String, DateTime
 import uuid
 
 Base = declarative_base()
 
+
 class BaseModel:
     """The BaseModel class from which future classes will be derived"""
-
     id = Column(String(60), nullable=False, primary_key=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -23,9 +23,9 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """Initialization of the BaseModel class"""
         if kwargs:
-            self.id = kwargs.get('id', str(uuid.uuid4()))  # Generate a unique ID
-            self.created_at = datetime.utcnow()  # Set the creation date/time
-            self.updated_at = datetime.utcnow()  # Set the last update date/time
+            self.id = kwargs.get('id', str(uuid.uuid4()))  # Gen unique ID
+            self.created_at = datetime.utcnow()  # creation date/time
+            self.updated_at = datetime.utcnow()  # last update date/time
             for key, value in kwargs.items():
                 if key != '__class__':
                     setattr(self, key, value)  # adds attributes from kwargs
@@ -95,3 +95,13 @@ class BaseModel:
             args = [args[:2]]
         for key, value in args:
             models.storage.update_one(cls.__name__, instance_id, key, value)
+
+
+class PlaceAmenity(Base):
+    """Association table for Place and Amenity many-to-many relationship"""
+
+    __tablename__ = "place_amenity"
+    place_id = Column(String(60), ForeignKey('places.id'),
+                      primary_key=True, nullable=False)
+    amenity_id = Column(String(60), ForeignKey('amenities.id'),
+                        primary_key=True, nullable=False)

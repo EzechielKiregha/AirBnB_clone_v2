@@ -3,6 +3,7 @@
 from os import getenv
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
 import models
+from models.amenity import Amenity
 from models.base_model import Base, BaseModel
 from models.review import Review
 from sqlalchemy.orm import relationship
@@ -10,7 +11,6 @@ from sqlalchemy.orm import relationship
 
 class Place(BaseModel, Base):
     """This class defines a place by various attributes"""
-
     __tablename__ = "places"
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
@@ -24,6 +24,8 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     reviews = relationship("Review",
                            backref="place", cascade="all, delete-orphan")
+    amenities = relationship("Amenity",
+                             secondary="place_amenity", viewonly=False)
 
     if getenv('HBNB_TYPE_STORAGE') != 'db':
         @property
@@ -38,3 +40,16 @@ class Place(BaseModel, Base):
                     reviews_list.append(review)
             return reviews_list
 
+    amenity_ids = []
+
+    @property
+    def amenities(self):
+        """Getter attribute that returns list of Amenity instances"""
+        return [models.storage.all()["Amenity.{}".format(amenity_id)
+                                     ] for amenity_id in self.amenity_ids]
+
+    @amenities.setter
+    def amenities(self, amenity_obj):
+        """Setter attribute that appends Amenity.id to amenity_ids"""
+        if isinstance(amenity_obj, Amenity):
+            self.amenity_ids.append(amenity_obj.id)
