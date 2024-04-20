@@ -95,13 +95,3 @@ class BaseModel:
             args = [args[:2]]
         for key, value in args:
             models.storage.update_one(cls.__name__, instance_id, key, value)
-
-
-class PlaceAmenity(Base):
-    """Association table for Place and Amenity many-to-many relationship"""
-
-    __tablename__ = "place_amenity"
-    place_id = Column(String(60), ForeignKey('places.id'),
-                      primary_key=True, nullable=False)
-    amenity_id = Column(String(60), ForeignKey('amenities.id'),
-                        primary_key=True, nullable=False)
