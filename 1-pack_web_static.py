@@ -8,6 +8,11 @@ from datetime import datetime
 from fabric.api import local
 
 def do_pac():
+    """
+    Generates a .tgz archive from the contents of the web_static folder.
+    Returns:
+        Path to the archive if successful, None otherwise.
+    """
     dt = datetime.utcnow()
     file = f"versions/web_static_{dt.year}{dt.month}{dt.day}{dt.hour}{dt.minute}{dt.second}.tgz"
     
@@ -15,7 +20,7 @@ def do_pac():
         if local("mkdir -p versions").failed is True:
             return None
         
-    if local(f"tar -cvzf {file}").failed is True:
+    if local(f"tar -cvzf {file} web_static").failed is True:
         return None
     
     return file
