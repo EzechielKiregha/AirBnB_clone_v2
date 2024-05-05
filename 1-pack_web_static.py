@@ -15,8 +15,9 @@ def do_pack():
         Path to the archive if successful, None otherwise.
     """
     dt = datetime.utcnow()
-    file = f"versions/web_static_{dt.year}
-    {dt.month}{dt.day}{dt.hour}{dt.minute}{dt.second}.tgz"
+    file = "versions/web_static_{}{}{}{}{}{}.tgz".format(
+        dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second
+    )
 
     if os.path.isdir("versions") is False:
         if local("mkdir -p versions").failed is True:
