@@ -9,22 +9,31 @@ env.key_filename = '~/alx-server-key'
 
 
 def do_clean(number=0):
-    """Delete out-of-date archives.
-    Args:
-        number (int): The number of archives to keep.
-    If number is 0 or 1, keeps only the most recent archive. If
-    number is 2, keeps the most and second-most recent archives,
-    etc.
     """
-    number = 1 if int(number) == 0 else int(number)
+    Deletes out-of-date archives.
+    
+    Args:
+        number: The number of archives to keep (including the most recent).
+                Defaults to 0, which keeps only the most recent archive.
+    """
+    try:
+        number = int(number)
+    except ValueError:
+        print("Please provide a valid number.")
+        return
 
-    archives = sorted(os.listdir("versions"))
-    [archives.pop() for i in range(number)]
+    if number < 0:
+        print("Number must be a positive integer.")
+        return
+
+    # Local cleanup
     with lcd("versions"):
-        [local("rm ./{}".format(a)) for a in archives]
+        local_archives = local("ls -t", capture=True).split("\n")
+        if len(local_archives) > number:
+            local("rm -f {}".format(" ".join(local_archives[number:])))
 
+    # Remote cleanup
     with cd("/data/web_static/releases"):
-        archives = run("ls -tr").split()
-        archives = [a for a in archives if "web_static_" in a]
-        [archives.pop() for i in range(number)]
-        [run("rm -rf ./{}".format(a)) for a in archives]
+        remote_archives = run("ls -t").split("\n")
+        if len(remote_archives) > number:
+            run("rm -rf {}".format(" ".join(remote_archives[number:])))
