@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# This script is setting up prefered directory to hold static files
 
 # Install Nginx if not already installed
 if ! command -v nginx &> /dev/null; then
