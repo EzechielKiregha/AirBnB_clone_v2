@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 from fabric.api import local
 
-def do_pac():
+def do_pack():
     """
     Generates a .tgz archive from the contents of the web_static folder.
     Returns:
