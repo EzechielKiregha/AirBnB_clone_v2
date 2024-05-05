@@ -40,6 +40,6 @@ printf %s "server {
 
 sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 # test nginx 
-sudo nginx -t
+# sudo nginx -t
 # restart nginx
 sudo service nginx restart
