@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""Displays the string 'Hello HBNB'."""
 from flask import Flask
 
 app = Flask(__name__)
